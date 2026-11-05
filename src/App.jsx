@@ -1,5 +1,9 @@
 import { useEffect, useState } from "react";
 
+const API_BASE = (import.meta.env.VITE_API_BASE_URL || "").replace(/\/+$/, "");
+const apiUrl = (path) => `${API_BASE}${path}`;
+const assetUrl = (path) => path?.startsWith("/") ? apiUrl(path) : path;
+
 const money = (n) => `KES ${n.toLocaleString()}`;
 const when = (d) =>
   new Date(d + "T00:00").toLocaleDateString("en-KE", { weekday: "short", day: "numeric", month: "short", year: "numeric" });
@@ -26,7 +30,7 @@ function Art({ e }) {
   return (
     <div className="art">
       {e.image
-        ? <img src={e.image} alt={e.blurb || e.title} loading="lazy" />
+        ? <img src={assetUrl(e.image)} alt={e.blurb || e.title} loading="lazy" />
         : <svg viewBox="0 0 400 225" preserveAspectRatio="xMidYMid slice" role="img" aria-label={e.title}>{SCENES[e.category]}</svg>}
     </div>
   );
@@ -69,7 +73,7 @@ function Checkout({ e, onClose }) {
     setBusy(true);
     setError("");
     try {
-      const r = await fetch("/api/checkout", {
+      const r = await fetch(apiUrl("/api/checkout"), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ event_id: e.id, ...f, qty: Number(f.qty) }),
@@ -115,14 +119,14 @@ export default function App() {
   const [loadError, setLoadError] = useState(false);
 
   useEffect(() => {
-    Promise.all([fetch("/api/events").then((r) => r.json()), fetch("/api/categories").then((r) => r.json())])
+    Promise.all([fetch(apiUrl("/api/events")).then((r) => r.json()), fetch(apiUrl("/api/categories")).then((r) => r.json())])
       .then(([ev, c]) => { setEvents(ev); setCategories(c); })
       .catch(() => setLoadError(true));
 
     const p = new URLSearchParams(location.search);
     const ref = p.get("reference") || p.get("trxref");
     if (ref) {
-      fetch(`/api/verify/${ref}`).then((r) => r.json()).then((d) => {
+      fetch(apiUrl(`/api/verify/${ref}`)).then((r) => r.json()).then((d) => {
         setNotice(d.order?.status === "paid"
           ? { ok: true, download: d.download, text: `Payment confirmed. ${d.order.qty} ticket(s) for ${d.event}. Your ticket reference is ${d.order.ref}. Show it at the gate.` }
           : { ok: false, text: d.error || "Your payment was not completed. Pick the event again to retry." });
@@ -144,7 +148,7 @@ export default function App() {
         <nav><a href="#featured">Featured</a><a href="#events">Events</a><a href="#how">How it works</a></nav>
       </header>
 
-      {notice && <div className={`notice ${notice.ok ? "ok" : "bad"}`} role="status"><span>{notice.text}{notice.download && <a className="btn dl" href={notice.download}>Download ticket (PDF)</a>}</span><button onClick={() => setNotice(null)} aria-label="Dismiss">Close</button></div>}
+      {notice && <div className={`notice ${notice.ok ? "ok" : "bad"}`} role="status"><span>{notice.text}{notice.download && <a className="btn dl" href={assetUrl(notice.download)}>Download ticket (PDF)</a>}</span><button onClick={() => setNotice(null)} aria-label="Dismiss">Close</button></div>}
 
       <section className="hero">
         <div className="wrap hero-grid">

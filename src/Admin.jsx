@@ -1,10 +1,14 @@
 import { useEffect, useState } from "react";
 
+const API_BASE = (import.meta.env.VITE_API_BASE_URL || "").replace(/\/+$/, "");
+const apiUrl = (path) => `${API_BASE}${path}`;
+const assetUrl = (path) => path?.startsWith("/") ? apiUrl(path) : path;
+
 const money = (c) => `KES ${(c / 100).toLocaleString()}`;
 const blank = { title: "", category: "sports", venue: "", city: "Nairobi", date: "", price: 1000, capacity: 100, blurb: "", image: "", featured: false, active: true };
 
 const call = (path, token, method = "GET", body) =>
-  fetch(`/api/admin/${path}`, {
+  fetch(apiUrl(`/api/admin/${path}`), {
     method,
     headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
     body: body && JSON.stringify(body),
@@ -35,13 +39,13 @@ export default function Admin() {
   useEffect(() => {
     if (!token) return;
     load();
-    fetch("/api/categories").then((r) => r.json()).then(setCats);
+    fetch(apiUrl("/api/categories")).then((r) => r.json()).then(setCats);
   }, [token]);
 
   const login = async (e) => {
     e.preventDefault();
     setMsg("");
-    const r = await fetch("/api/admin/login", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ password: pw }) });
+    const r = await fetch(apiUrl("/api/admin/login"), { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ password: pw }) });
     const d = await r.json();
     if (!r.ok) return setMsg(d.error);
     sessionStorage.setItem("tp_admin", d.token);
@@ -65,7 +69,7 @@ export default function Admin() {
     setMsg("");
     const fd = new FormData();
     fd.append("file", file);
-    const r = await fetch("/api/admin/upload", { method: "POST", headers: { Authorization: `Bearer ${token}` }, body: fd });
+    const r = await fetch(apiUrl("/api/admin/upload"), { method: "POST", headers: { Authorization: `Bearer ${token}` }, body: fd });
     const d = await r.json();
     if (!r.ok) return setMsg(d.error);
     setForm((f) => ({ ...f, image: d.url }));
@@ -146,7 +150,7 @@ export default function Admin() {
                 <label>Price (KES)<input required type="number" min="0" value={form.price} onChange={set("price")} /></label>
                 <label>Capacity<input required type="number" min="1" value={form.capacity} onChange={set("capacity")} /></label>
                 <div className="wide img-field">
-                  {form.image && <img src={form.image} alt="" />}
+                  {form.image && <img src={assetUrl(form.image)} alt="" />}
                   <label>Event image (JPG, PNG or WebP)<input type="file" accept="image/png,image/jpeg,image/webp" onChange={upload} /></label>
                   <label>Or image web address<input value={form.image || ""} onChange={set("image")} placeholder="https://..." /></label>
                   <label>Image description for screen readers<input value={form.blurb} onChange={set("blurb")} /></label>
