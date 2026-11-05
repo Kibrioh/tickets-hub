@@ -1,6 +1,9 @@
 import { useEffect, useState } from "react";
 
 const API_BASE = (import.meta.env.VITE_API_BASE_URL || "").replace(/\/+$/, "");
+if (!API_BASE) {
+  throw new Error("VITE_API_BASE_URL is not configured");
+}
 const apiUrl = (path) => `${API_BASE}${path}`;
 const assetUrl = (path) => path?.startsWith("/") ? apiUrl(path) : path;
 
