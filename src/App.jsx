@@ -54,6 +54,7 @@ const DEFAULT_EVENT_IMAGES = {
 };
 
 
+
 function Art({ e }) {
   const image = e.image || DEFAULT_EVENT_IMAGES[e.title];
 
@@ -67,27 +68,13 @@ function Art({ e }) {
 
   return (
     <div className="art">
-
-      {/* SVG placeholder */}
+      {/* Placeholder displayed while image loads */}
       <div
         className={`art-placeholder ${
           imageLoaded ? "placeholder-hidden" : ""
         }`}
       >
-        {SCENES[e.category] ? (
-          <svg
-            viewBox="0 0 400 225"
-            preserveAspectRatio="xMidYMid slice"
-            role="img"
-            aria-label={`${e.title} illustration`}
-          >
-            {SCENES[e.category]}
-          </svg>
-        ) : (
-          <div className="art-placeholder-text">
-            {e.title}
-          </div>
-        )}
+        <span>{e.title}</span>
       </div>
 
       {/* Actual event image */}
@@ -104,7 +91,6 @@ function Art({ e }) {
           }`}
         />
       )}
-
     </div>
   );
 }
