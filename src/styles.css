@@ -184,3 +184,85 @@ footer p{color:#9FB3C8;font-size:.9rem}
     transition: none;
   }
 }
+
+/* =====================================
+   EVENT SKELETON LOADING
+===================================== */
+
+.skeleton-ticket {
+    overflow: hidden;
+    pointer-events: none;
+}
+
+.skeleton-art,
+.skeleton-line {
+    background: linear-gradient(
+        90deg,
+        #eeeeee 25%,
+        #dddddd 50%,
+        #eeeeee 75%
+    );
+
+    background-size: 200% 100%;
+    animation: skeleton-shimmer 1.5s infinite linear;
+    border-radius: 7px;
+}
+
+.skeleton-art {
+    width: 100%;
+    min-height: 170px;
+}
+
+.skeleton-body {
+    padding: 15px;
+}
+
+.skeleton-line {
+    height: 14px;
+    margin: 12px 0;
+    width: 85%;
+}
+
+.skeleton-line.short {
+    width: 35%;
+}
+
+.skeleton-line.title {
+    width: 70%;
+    height: 20px;
+}
+
+.skeleton-line.medium {
+    width: 55%;
+}
+
+.skeleton-stub {
+    padding: 12px;
+}
+
+.skeleton-line.price {
+    width: 55%;
+    height: 22px;
+}
+
+.skeleton-line.button {
+    width: 100%;
+    height: 38px;
+}
+
+@keyframes skeleton-shimmer {
+    0% {
+        background-position: 200% 0;
+    }
+
+    100% {
+        background-position: -200% 0;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .skeleton-art,
+    .skeleton-line {
+        animation: none;
+    }
+}
