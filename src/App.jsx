@@ -5,7 +5,28 @@ if (!API_BASE) {
   throw new Error("VITE_API_BASE_URL is not configured");
 }
 const apiUrl = (path) => `${API_BASE}${path}`;
-const assetUrl = (path) => path;
+
+const assetUrl = (path) => {
+  if (!path) return "";
+
+  // Admin-uploaded images stored on Flask backend
+  if (path.startsWith("/uploads/")) {
+    return apiUrl(path);
+  }
+
+  // Frontend static images in public/images
+  if (path.startsWith("/images/")) {
+    return path;
+  }
+
+  // External image URLs
+  if (path.startsWith("http://") || path.startsWith("https://")) {
+    return path;
+  }
+
+  return path;
+};
+
 
 const money = (n) => `KES ${n.toLocaleString()}`;
 const when = (d) =>
@@ -22,35 +43,72 @@ function Logo() {
 }
 
 const DEFAULT_EVENT_IMAGES = {
-  "Bayern Munchen Vs Ajax": "../public/images/image_73154e41.jpg",
-  "Startup Pitch Night": "../public/images/startup_pitch_night.png",
-  "Laugh Out Loud Comedy Night": "../public/images/laugh_out_loud_comedy_night.png",
-  "Sunset Afrobeats Live": "../public/images/sunset_afrobeats_live.png",
-  "Rugby Sevens Showdown": "../public/images/rugby_sevens_showdown.png",
-  "Naivasha Food and Music Fest": "../public/images/naivasha_food_and_music_fest.png",
-  "Jazz at the Gardens": "../public/images/jazz_at_the_gardens.png",
-  "Nairobi Tech Summit 2027": "../public/images/Nairobi Tech Summit 2027 Poster.png",
+  "Bayern Munchen Vs Ajax": "/images/image_73154e41.jpg",
+  "Startup Pitch Night": "/images/startup_pitch_night.png",
+  "Laugh Out Loud Comedy Night": "/images/laugh_out_loud_comedy_night.png",
+  "Sunset Afrobeats Live": "/images/sunset_afrobeats_live.png",
+  "Rugby Sevens Showdown": "/images/rugby_sevens_showdown.png",
+  "Naivasha Food and Music Fest": "/images/naivasha_food_and_music_fest.png",
+  "Jazz at the Gardens": "/images/jazz_at_the_gardens.png",
+  "Nairobi Tech Summit 2027": "/images/Nairobi Tech Summit 2027 Poster.png",
 };
+
 
 function Art({ e }) {
   const image = e.image || DEFAULT_EVENT_IMAGES[e.title];
 
+  const [imageLoaded, setImageLoaded] = useState(false);
+  const [imageError, setImageError] = useState(false);
+
+  useEffect(() => {
+    setImageLoaded(false);
+    setImageError(false);
+  }, [image]);
+
   return (
     <div className="art">
-      {image ? (
+
+      {/* SVG placeholder */}
+      <div
+        className={`art-placeholder ${
+          imageLoaded ? "placeholder-hidden" : ""
+        }`}
+      >
+        {SCENES[e.category] ? (
+          <svg
+            viewBox="0 0 400 225"
+            preserveAspectRatio="xMidYMid slice"
+            role="img"
+            aria-label={`${e.title} illustration`}
+          >
+            {SCENES[e.category]}
+          </svg>
+        ) : (
+          <div className="art-placeholder-text">
+            {e.title}
+          </div>
+        )}
+      </div>
+
+      {/* Actual event image */}
+      {image && !imageError && (
         <img
+          key={image}
           src={assetUrl(image)}
           alt={e.blurb || e.title}
           loading="lazy"
+          onLoad={() => setImageLoaded(true)}
+          onError={() => setImageError(true)}
+          className={`event-image ${
+            imageLoaded ? "image-visible" : ""
+          }`}
         />
-      ) : (
-        <div className="art-placeholder">
-          {e.title}
-        </div>
       )}
+
     </div>
   );
 }
+
 
 function Ticket({ e, cats, onBuy, big }) {
   const left = e.left > 0;

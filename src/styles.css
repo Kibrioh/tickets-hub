@@ -125,3 +125,62 @@ footer p{color:#9FB3C8;font-size:.9rem}
   .top{padding-top:calc(.9rem + env(safe-area-inset-top))}
   .notice .dl{display:block;margin:.6rem 0 0;text-align:center}
 }
+
+
+.art {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  background: #111827;
+}
+
+.art-placeholder {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 1;
+  transition: opacity 450ms ease;
+}
+
+.art-placeholder svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.art-placeholder.placeholder-hidden {
+  opacity: 0;
+}
+
+.event-image {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0;
+  transition: opacity 450ms ease;
+}
+
+.event-image.image-visible {
+  opacity: 1;
+}
+
+.art-placeholder-text {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-weight: 600;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .art-placeholder,
+  .event-image {
+    transition: none;
+  }
+}

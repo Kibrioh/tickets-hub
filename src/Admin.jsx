@@ -1,8 +1,35 @@
 import { useEffect, useState } from "react";
 
+
 const API_BASE = (import.meta.env.VITE_API_BASE_URL || "").replace(/\/+$/, "");
+
+if (!API_BASE) {
+  throw new Error("VITE_API_BASE_URL is not configured");
+}
+
 const apiUrl = (path) => `${API_BASE}${path}`;
-const assetUrl = (path) => path?.startsWith("/") ? apiUrl(path) : path;
+
+const assetUrl = (path) => {
+  if (!path) return "";
+
+  // Images uploaded through the admin panel
+  if (path.startsWith("/uploads/")) {
+    return apiUrl(path);
+  }
+
+  // Static images stored in frontend/public/images
+  if (path.startsWith("/images/")) {
+    return path;
+  }
+
+  // Other absolute external image URLs
+  if (path.startsWith("http://") || path.startsWith("https://")) {
+    return path;
+  }
+
+  return path;
+};
+
 
 const money = (c) => `KES ${(c / 100).toLocaleString()}`;
 const blank = { title: "", category: "sports", venue: "", city: "Nairobi", date: "", price: 1000, capacity: 100, blurb: "", image: "", featured: false, active: true };
