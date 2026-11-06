@@ -5,7 +5,7 @@ if (!API_BASE) {
   throw new Error("VITE_API_BASE_URL is not configured");
 }
 const apiUrl = (path) => `${API_BASE}${path}`;
-const assetUrl = (path) => path?.startsWith("/") ? apiUrl(path) : path;
+const assetUrl = (path) => path;
 
 const money = (n) => `KES ${n.toLocaleString()}`;
 const when = (d) =>
@@ -21,20 +21,33 @@ function Logo() {
   );
 }
 
-const SCENES = {
-  sports: (<><rect width="400" height="225" fill="#0F6E56" /><g fill="none" stroke="#9FE1CB" strokeWidth="3"><rect x="30" y="30" width="340" height="165" /><line x1="200" y1="30" x2="200" y2="195" /><circle cx="200" cy="112" r="38" /><rect x="30" y="72" width="50" height="80" /><rect x="320" y="72" width="50" height="80" /></g><circle cx="200" cy="112" r="9" fill="#fff" /></>),
-  music: (<><rect width="400" height="225" fill="#26215C" /><circle cx="300" cy="70" r="46" fill="#7F77DD" />{[40,80,120,160,200,240,280,320,360].map((x, i) => <rect key={x} x={x - 10} y={190 - [50,110,80,140,95,125,60,100,70][i]} width="20" height={[50,110,80,140,95,125,60,100,70][i]} rx="4" fill="#AFA9EC" />)}</>),
-  festivals: (<><rect width="400" height="225" fill="#FAC775" /><circle cx="310" cy="150" r="60" fill="#EF9F27" /><path d="M0 60 Q200 130 400 60" fill="none" stroke="#412402" strokeWidth="2" />{[40,100,160,220,280,340].map((x, i) => <polygon key={x} points={`${x},${72 + Math.sin(x / 63) * 14} ${x + 26},${76 + Math.sin(x / 63) * 14} ${x + 12},${104 + Math.sin(x / 63) * 14}`} fill={["#E4572E","#0F6E56","#7F77DD"][i % 3]} />)}<rect y="185" width="400" height="40" fill="#854F0B" /></>),
-  tech: (<><rect width="400" height="225" fill="#0B1F3A" /><g stroke="#1B3B66" strokeWidth="1.5">{[0,1,2,3,4,5,6,7].map((i) => <line key={"v" + i} x1={i * 57} y1="0" x2={i * 57} y2="225" />)}{[0,1,2,3,4].map((i) => <line key={"h" + i} x1="0" y1={i * 57} x2="400" y2={i * 57} />)}</g><polyline points="57,171 114,114 228,114 285,57 342,114" fill="none" stroke="#00B8D9" strokeWidth="3" />{[[57,171],[114,114],[228,114],[285,57],[342,114]].map(([x, y]) => <circle key={x} cx={x} cy={y} r="9" fill="#00B8D9" />)}</>),
-  comedy: (<><rect width="400" height="225" fill="#4A1B0C" /><polygon points="120,0 160,0 230,190 50,190" fill="#F5C4B3" opacity=".35" /><polygon points="240,0 280,0 350,190 170,190" fill="#F5C4B3" opacity=".25" /><ellipse cx="200" cy="195" rx="170" ry="22" fill="#E4572E" /><rect x="194" y="80" width="12" height="105" fill="#F0997B" /><circle cx="200" cy="72" r="16" fill="#fff" /></>),
+const DEFAULT_EVENT_IMAGES = {
+  "Bayern Munchen Vs Ajax": "../public/images/image_73154e41.jpg",
+  "Startup Pitch Night": "../public/images/startup_pitch_night.png",
+  "Laugh Out Loud Comedy Night": "../public/images/laugh_out_loud_comedy_night.png",
+  "Sunset Afrobeats Live": "../public/images/sunset_afrobeats_live.png",
+  "Rugby Sevens Showdown": "../public/images/rugby_sevens_showdown.png",
+  "Naivasha Food and Music Fest": "../public/images/naivasha_food_and_music_fest.png",
+  "Jazz at the Gardens": "../public/images/jazz_at_the_gardens.png",
+  "Nairobi Tech Summit 2027": "../public/images/Nairobi Tech Summit 2027 Poster.png",
 };
 
 function Art({ e }) {
+  const image = e.image || DEFAULT_EVENT_IMAGES[e.title];
+
   return (
     <div className="art">
-      {e.image
-        ? <img src={assetUrl(e.image)} alt={e.blurb || e.title} loading="lazy" />
-        : <svg viewBox="0 0 400 225" preserveAspectRatio="xMidYMid slice" role="img" aria-label={e.title}>{SCENES[e.category]}</svg>}
+      {image ? (
+        <img
+          src={assetUrl(image)}
+          alt={e.blurb || e.title}
+          loading="lazy"
+        />
+      ) : (
+        <div className="art-placeholder">
+          {e.title}
+        </div>
+      )}
     </div>
   );
 }
