@@ -56,7 +56,7 @@ const DEFAULT_EVENT_IMAGES = {
 
 
 function Art({ e }) {
-  const image = DEFAULT_EVENT_IMAGES || [e.title]e.image;
+  const image = DEFAULT_EVENT_IMAGES[e.title] || e.image;
 
   const [imageLoaded, setImageLoaded] = useState(false);
   const [imageError, setImageError] = useState(false);
